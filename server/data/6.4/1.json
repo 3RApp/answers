@@ -1,0 +1,48 @@
+{
+  "heading": "Решение: вложенные маршруты и динамические сегменты (новая тематика — каталог фильмов)",
+  "chapter": "6.4",
+  "input_data": "Реализована маршрутизация каталога фильмов с тремя уровнями вложенности: список фильмов, информация о фильме и просмотр конкретной сцены. В структуре используются динамические сегменты, отражающие идентификатор фильма и номер сцены. Архитектура соответствует принципу разделения на страницы и бизнес-компоненты.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "src/routes.js — конфигурация маршрутов каталога фильмов",
+      "code": "import React from 'react';\nimport { createBrowserRouter } from 'react-router-dom';\nimport { Layout } from './layout/Layout';\nimport MoviePage from './pages/MoviePage';\nimport { MovieDetails } from './business/MovieDetails';\nimport { MovieScene } from './business/MovieScene';\nimport { NotFoundPage } from './pages/NotFoundPage';\n\nexport const router = createBrowserRouter([\n  {\n    path: '/',\n    element: <Layout />,\n    errorElement: <NotFoundPage />,\n    children: [\n      {\n        path: 'movies',\n        element: <MoviePage />,\n        children: [\n          {\n            path: ':movieId',\n            element: <MovieDetails />,\n            children: [\n              { path: ':sceneId', element: <MovieScene /> }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n]);"
+    },
+    {
+      "type": "code",
+      "title": "src/layout/Layout.js — общий шаблон приложения",
+      "code": "import React from 'react';\nimport { NavLink, Outlet } from 'react-router-dom';\n\nexport const Layout = () => (\n  <div>\n    <header>\n      <h2>Cinema Explorer</h2>\n      <nav>\n        <NavLink to='/movies'>Movies</NavLink>\n      </nav>\n    </header>\n    <main>\n      <Outlet />\n    </main>\n    <footer>© 2025 Cinema Explorer</footer>\n  </div>\n);"
+    },
+    {
+      "type": "code",
+      "title": "src/pages/MoviePage.js — страница списка фильмов",
+      "code": "import React from 'react';\nimport { Outlet, Link } from 'react-router-dom';\n\nexport default function MoviePage() {\n  const movies = [\n    { id: 'inception', title: 'Inception' },\n    { id: 'interstellar', title: 'Interstellar' },\n    { id: 'tenet', title: 'Tenet' }\n  ];\n\n  return (\n    <section>\n      <h3>Movie Catalog</h3>\n      <ul>\n        {movies.map(m => (\n          <li key={m.id}>\n            <Link to={m.id}>{m.title}</Link>\n          </li>\n        ))}\n      </ul>\n      <Outlet />\n    </section>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "title": "src/business/MovieDetails.js — бизнес-компонент информации о фильме",
+      "code": "import React from 'react';\nimport { useParams, Outlet, Link } from 'react-router-dom';\n\nexport const MovieDetails = () => {\n  const { movieId } = useParams();\n  const scenes = [1, 2, 3];\n\n  return (\n    <article>\n      <h4>Фильм: {movieId}</h4>\n      <p>Выберите сцену:</p>\n      <ul>\n        {scenes.map(scene => (\n          <li key={scene}>\n            <Link to={String(scene)}>Сцена {scene}</Link>\n          </li>\n        ))}\n      </ul>\n      <Outlet />\n    </article>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "src/business/MovieScene.js — бизнес-компонент просмотра сцены",
+      "code": "import React from 'react';\nimport { useParams } from 'react-router-dom';\n\nexport const MovieScene = () => {\n  const { movieId, sceneId } = useParams();\n\n  return (\n    <div>\n      <h4>Фрагмент фильма</h4>\n      <p><b>Фильм:</b> {movieId}</p>\n      <p><b>Сцена №:</b> {sceneId}</p>\n      <p>Видео сцены загружается по пути /movies/{movieId}/{sceneId}</p>\n    </div>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "src/pages/NotFoundPage.js — страница для необработанных маршрутов",
+      "code": "import React from 'react';\n\nexport const NotFoundPage = () => <h3>Ошибка 404: страница не найдена</h3>;"
+    },
+    {
+      "type": "array",
+      "title": "Итоговая структура маршрутов и компонентов",
+      "array": [
+        "/ → Layout",
+        "/movies → MoviePage",
+        "/movies/:movieId → MovieDetails",
+        "/movies/:movieId/:sceneId → MovieScene",
+        "Для несовпадающих путей используется NotFoundPage"
+      ]
+    }
+  ]
+}

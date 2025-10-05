@@ -1,0 +1,32 @@
+{
+  "heading": "Решение: единый лэйаут с динамическим заголовком и двумя страницами",
+  "chapter": "6.7",
+  "input_data": "Реализовано минимальное приложение с маршрутизацией, общим лэйаутом AppLayout и динамически изменяющимся заголовком при переключении между страницами.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "src/routes.js — настройка маршрутов",
+      "code": "import React from 'react';\nimport { createBrowserRouter } from 'react-router-dom';\nimport { AppLayout } from './layout/AppLayout';\nimport HomePage from './pages/HomePage';\nimport AboutPage from './pages/AboutPage';\nimport { NotFoundPage } from './pages/NotFoundPage';\n\nexport const router = createBrowserRouter([\n  {\n    path: '/',\n    element: <AppLayout />,\n    children: [\n      { index: true, element: <HomePage /> },\n      { path: 'about', element: <AboutPage /> }\n    ],\n    errorElement: <NotFoundPage />\n  }\n]);"
+    },
+    {
+      "type": "code",
+      "title": "src/layout/AppLayout.jsx — общий лэйаут с динамическим заголовком",
+      "code": "import React from 'react';\nimport { Outlet, NavLink, useLocation } from 'react-router-dom';\n\nexport const AppLayout = () => {\n  const location = useLocation();\n  const title = location.pathname === '/about' ? 'О проекте' : 'Главная страница';\n\n  return (\n    <div>\n      <header>\n        <h2>{title}</h2>\n        <nav>\n          <NavLink to='/' end>Главная</NavLink>{' | '}\n          <NavLink to='/about'>О проекте</NavLink>\n        </nav>\n      </header>\n      <main>\n        <Outlet />\n      </main>\n    </div>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "src/pages/HomePage.jsx — главная страница",
+      "code": "import React from 'react';\n\nexport default function HomePage() {\n  return (\n    <section>\n      <p>Добро пожаловать на главную страницу! Здесь начинается ваше знакомство с приложением.</p>\n    </section>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "title": "src/pages/AboutPage.jsx — страница о проекте",
+      "code": "import React from 'react';\n\nexport default function AboutPage() {\n  return (\n    <section>\n      <p>Это приложение демонстрирует базовую работу с лэйаутом и маршрутизацией в React Router.</p>\n    </section>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "title": "src/pages/NotFoundPage.jsx — страница 404",
+      "code": "import React from 'react';\n\nexport const NotFoundPage = () => <h3>Ошибка 404: страница не найдена</h3>;"
+    }
+  ]
+}

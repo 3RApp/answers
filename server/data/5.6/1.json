@@ -1,0 +1,37 @@
+{
+  "heading": "Решение: работа с состоянием для комплексных данных",
+  "chapter": "5.6",
+  "input_data": "Определены компоненты CounterPanel, TaskList и ProfileForm с состоянием различной структуры. Организована композиция через Dashboard и реализовано отображение сводки.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "Компонент CounterPanel",
+      "code": "import React, { useState } from 'react';\n\nexport const CounterPanel = () => {\n  const [left, setLeft] = useState(0);\n  const [right, setRight] = useState(0);\n\n  return (\n    <div>\n      <h3>Counter Panel</h3>\n      <div>\n        <button onClick={() => setLeft(left - 1)}>-</button>\n        <span>{left}</span>\n        <button onClick={() => setLeft(left + 1)}>+</button>\n      </div>\n      <div>\n        <button onClick={() => setRight(right - 1)}>-</button>\n        <span>{right}</span>\n        <button onClick={() => setRight(right + 1)}>+</button>\n      </div>\n    </div>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент TaskList",
+      "code": "import React, { useState } from 'react';\n\nexport const TaskList = () => {\n  const [tasks, setTasks] = useState([]);\n  const [title, setTitle] = useState('');\n\n  const addTask = () => {\n    if (title.trim() === '') return;\n    setTasks([...tasks, { id: Date.now(), title }]);\n    setTitle('');\n  };\n\n  const removeTask = (id) => setTasks(tasks.filter(task => task.id !== id));\n\n  return (\n    <div>\n      <h3>Tasks</h3>\n      <input value={title} onChange={(e) => setTitle(e.target.value)} />\n      <button onClick={addTask}>Добавить</button>\n      <ul>\n        {tasks.map(task => (\n          <li key={task.id}>\n            {task.title}\n            <button onClick={() => removeTask(task.id)}>Удалить</button>\n          </li>\n        ))}\n      </ul>\n    </div>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент ProfileForm",
+      "code": "import React, { useState } from 'react';\n\nexport const ProfileForm = () => {\n  const [profile, setProfile] = useState({ name: '', email: '' });\n\n  const handleChange = (e) => {\n    const { name, value } = e.target;\n    setProfile(prev => ({ ...prev, [name]: value }));\n  };\n\n  return (\n    <div>\n      <h3>Profile</h3>\n      <input name=\"name\" value={profile.name} onChange={handleChange} placeholder=\"Name\" />\n      <input name=\"email\" value={profile.email} onChange={handleChange} placeholder=\"Email\" />\n      <p>Текущий пользователь: {profile.name || '—'}</p>\n    </div>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент Dashboard",
+      "code": "import React from 'react';\nimport { CounterPanel } from './CounterPanel';\nimport { TaskList } from './TaskList';\nimport { ProfileForm } from './ProfileForm';\n\nexport default function Dashboard() {\n  return (\n    <main>\n      <h2>Dashboard</h2>\n      <ProfileForm />\n      <CounterPanel />\n      <TaskList />\n    </main>\n  );\n}"
+    },
+    {
+      "type": "array",
+      "title": "Функциональные возможности",
+      "array": [
+        "CounterPanel содержит два независимых счётчика и управляет ими через отдельные вызовы useState.",
+        "TaskList демонстрирует управление состоянием с массивом объектов и обновление массива при добавлении и удалении элементов.",
+        "ProfileForm использует объект состояния и динамическое обновление по ключу, что обеспечивает реактивное обновление формы.",
+        "Dashboard объединяет все компоненты и позволяет наблюдать итоговую сводку в интерфейсе."
+      ]
+    }
+  ]
+}

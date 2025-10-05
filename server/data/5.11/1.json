@@ -1,0 +1,48 @@
+{
+  "heading": "Решение: архитектура с несколькими контекстами",
+  "chapter": "Раздел 39. Контекст и useContext",
+  "input_data": "Реализованы два контекста: ThemeContext и UserContext. Организовано управление темой и пользователем с возможностью изменения состояния из дочерних компонентов.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "Создание контекстов",
+      "code": "import React, { createContext, useState, useContext } from 'react';\n\nexport const ThemeContext = createContext(null);\nexport const UserContext = createContext(null);"
+    },
+    {
+      "type": "code",
+      "title": "Компонент RootProvider",
+      "code": "export const RootProvider = ({ children }) => {\n  const [theme, setTheme] = useState('light');\n  const [user, setUser] = useState({ name: 'Гость' });\n\n  const toggleTheme = () => setTheme(t => (t === 'light' ? 'dark' : 'light'));\n  const updateUser = (name) => setUser({ name });\n\n  return (\n    <ThemeContext.Provider value={{ theme, toggleTheme }}>\n      <UserContext.Provider value={{ user, updateUser }}>\n        {children}\n      </UserContext.Provider>\n    </ThemeContext.Provider>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент Header",
+      "code": "export const Header = () => {\n  const { theme } = useContext(ThemeContext);\n  const { user } = useContext(UserContext);\n\n  const style = {\n    padding: '10px',\n    backgroundColor: theme === 'light' ? '#eee' : '#333',\n    color: theme === 'light' ? '#000' : '#fff'\n  };\n\n  return <header style={style}>Привет, {user.name}!</header>;\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент ThemeSwitcher",
+      "code": "export const ThemeSwitcher = () => {\n  const { theme, toggleTheme } = useContext(ThemeContext);\n\n  return (\n    <button onClick={toggleTheme}>\n      Переключить тему (текущая: {theme})\n    </button>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент UserProfileEditor",
+      "code": "export const UserProfileEditor = () => {\n  const { user, updateUser } = useContext(UserContext);\n  const [name, setName] = useState(user.name);\n\n  const handleSubmit = (e) => {\n    e.preventDefault();\n    updateUser(name);\n  };\n\n  return (\n    <form onSubmit={handleSubmit}>\n      <input value={name} onChange={(e) => setName(e.target.value)} />\n      <button type=\"submit\">Изменить имя</button>\n    </form>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент Dashboard",
+      "code": "export const Dashboard = () => (\n  <RootProvider>\n    <Header />\n    <ThemeSwitcher />\n    <UserProfileEditor />\n  </RootProvider>\n);"
+    },
+    {
+      "type": "array",
+      "title": "Функциональные возможности",
+      "array": [
+        "RootProvider объединяет два контекста и управляет состоянием темы и пользователя.",
+        "Header получает данные сразу из двух контекстов и динамически обновляет стиль и текст.",
+        "ThemeSwitcher изменяет тему приложения через функцию toggleTheme из ThemeContext.",
+        "UserProfileEditor изменяет имя пользователя через функцию updateUser из UserContext.",
+        "Dashboard демонстрирует совместную работу нескольких контекстов в едином интерфейсе."
+      ]
+    }
+  ]
+}

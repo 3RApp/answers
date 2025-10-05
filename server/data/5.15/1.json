@@ -1,0 +1,38 @@
+{
+  "heading": "Решение: продвинутые сценарии использования useRef",
+  "chapter": "5.15",
+  "input_data": "Реализованы несколько компонентов, демонстрирующих использование useRef для управления DOM и состоянием без перерендера. Все объединены в ParentDashboard.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "FocusableInput с forwardRef",
+      "code": "import React, { useRef, useImperativeHandle, forwardRef, useEffect } from 'react';\n\nexport const FocusableInput = forwardRef((props, ref) => {\n  const inputRef = useRef(null);\n\n  useEffect(() => {\n    inputRef.current.focus();\n    console.log('FocusableInput mounted', inputRef.current);\n    return () => console.log('FocusableInput unmounted');\n  }, []);\n\n  useImperativeHandle(ref, () => ({\n    focus: () => inputRef.current && inputRef.current.focus()\n  }));\n\n  return <input ref={inputRef} placeholder=\"Введите текст\" />;\n});"
+    },
+    {
+      "type": "code",
+      "title": "StopWatch с использованием useRef",
+      "code": "import React, { useRef, useState, useEffect } from 'react';\n\nexport const StopWatch = () => {\n  const [elapsed, setElapsed] = useState(0);\n  const startRef = useRef(null);\n  const intervalRef = useRef(null);\n  const runningRef = useRef(false);\n\n  const start = () => {\n    if (runningRef.current) return;\n    runningRef.current = true;\n    startRef.current = Date.now() - elapsed;\n    intervalRef.current = setInterval(() => setElapsed(Date.now() - startRef.current), 100);\n  };\n\n  const stop = () => {\n    runningRef.current = false;\n    clearInterval(intervalRef.current);\n  };\n\n  const reset = () => {\n    stop();\n    setElapsed(0);\n  };\n\n  useEffect(() => {\n    return () => clearInterval(intervalRef.current);\n  }, []);\n\n  return (\n    <div>\n      <p>Время: {elapsed} мс</p>\n      <button onClick={start}>Старт</button>\n      <button onClick={stop}>Стоп</button>\n      <button onClick={reset}>Сброс</button>\n    </div>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "ScrollToSection с использованием useRef",
+      "code": "import React, { useRef } from 'react';\n\nexport const ScrollToSection = () => {\n  const sectionRefs = [useRef(null), useRef(null), useRef(null)];\n\n  const scrollTo = (index) => {\n    sectionRefs[index].current.scrollIntoView({ behavior: 'smooth' });\n  };\n\n  return (\n    <div style={{ height: '200px', overflowY: 'auto', border: '1px solid black' }}>\n      {['Секция 1', 'Секция 2', 'Секция 3'].map((label, idx) => (\n        <div key={idx} ref={sectionRefs[idx]} style={{ height: '150px' }}>{label}</div>\n      ))}\n      <div>\n        <button onClick={() => scrollTo(0)}>К секции 1</button>\n        <button onClick={() => scrollTo(1)}>К секции 2</button>\n        <button onClick={() => scrollTo(2)}>К секции 3</button>\n      </div>\n    </div>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "ParentDashboard, управляющий дочерними компонентами",
+      "code": "import React, { useRef } from 'react';\nimport { FocusableInput } from './FocusableInput';\nimport { StopWatch } from './StopWatch';\nimport { ScrollToSection } from './ScrollToSection';\n\nexport const ParentDashboard = () => {\n  const inputRef = useRef(null);\n\n  return (\n    <div>\n      <h2>Dashboard</h2>\n      <button onClick={() => inputRef.current.focus()}>Фокус на поле ввода</button>\n      <FocusableInput ref={inputRef} />\n      <StopWatch />\n      <ScrollToSection />\n    </div>\n  );\n};"
+    },
+    {
+      "type": "array",
+      "title": "Функциональные возможности",
+      "array": [
+        "FocusableInput автоматически получает фокус и предоставляет наружу метод focus через forwardRef.",
+        "StopWatch хранит стартовое время и идентификатор интервала в useRef, обновляет только отображаемое время.",
+        "ScrollToSection использует массив ref для прокрутки к конкретным DOM-элементам.",
+        "ParentDashboard управляет дочерними компонентами и вызывает метод focus у FocusableInput.",
+        "Все компоненты выводят логи в консоль при монтировании, размонтировании и изменении состояния ref."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "heading": "Решение: корректная конфигурация и иерархия ролей",
+  "chapter": "6.3",
+  "input_data": "Реализованы RouterProvider как корень, Layout как родительский маршрут с Outlet; страницы на одном уровне; бизнес-компоненты под страницами; добавлены защита /cart, errorElement, ленивая загрузка. Конечные компоненты Button и Input вынесены в src/components.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "src/index.jsx — запуск с RouterProvider",
+      "code": "import React from 'react';\nimport { createRoot } from 'react-dom/client';\nimport { RouterProvider } from 'react-router-dom';\nimport { router } from './routes';\n\ncreateRoot(document.getElementById('root')).render(\n  <RouterProvider router={router} />\n);"
+    },
+    {
+      "type": "code",
+      "title": "src/routes.js — конфигурация через createBrowserRouter",
+      "code": "import React, { Suspense, lazy } from 'react';\nimport { createBrowserRouter, Navigate } from 'react-router-dom';\nimport { Layout } from './layout/Layout';\nimport { ProtectedRoute } from './layout/ProtectedRoute';\n\nconst BookPage = lazy(() => import('./pages/BookPage'));\nconst AuthorPage = lazy(() => import('./pages/AuthorPage'));\nconst CartPage = lazy(() => import('./pages/CartPage'));\nconst LoginPage = lazy(() => import('./pages/LoginPage'));\n\nconst withSuspense = (node) => <Suspense fallback={<div>Loading…</div>}>{node}</Suspense>;\n\nexport const router = createBrowserRouter([\n  {\n    path: '/',\n    element: <Layout />,\n    errorElement: <div>Root error</div>,\n    children: [\n      { index: true, element: <Navigate to=\"/books\" replace /> },\n      { path: 'books', element: withSuspense(<BookPage />), errorElement: <div>Books error</div> },\n      { path: 'authors', element: withSuspense(<AuthorPage />), errorElement: <div>Authors error</div> },\n      { path: 'cart', element: <ProtectedRoute>{withSuspense(<CartPage />)}</ProtectedRoute>, errorElement: <div>Cart error</div> },\n      { path: 'login', element: withSuspense(<LoginPage />), errorElement: <div>Login error</div> }\n    ]\n  }\n]);"
+    },
+    {
+      "type": "code",
+      "title": "src/layout/Layout.jsx — родительский маршрут с Outlet и навигацией",
+      "code": "import React from 'react';\nimport { NavLink, Outlet } from 'react-router-dom';\n\nexport const Layout = () => (\n  <div>\n    <header>\n      <nav>\n        <NavLink to='/books'>Books</NavLink> |{' '}\n        <NavLink to='/authors'>Authors</NavLink> |{' '}\n        <NavLink to='/cart'>Cart</NavLink> |{' '}\n        <NavLink to='/login'>Login</NavLink>\n      </nav>\n    </header>\n    <main>\n      <Outlet />\n    </main>\n    <footer>© 2025</footer>\n  </div>\n);"
+    },
+    {
+      "type": "code",
+      "title": "src/layout/ProtectedRoute.jsx — защита /cart",
+      "code": "import React from 'react';\nimport { Navigate } from 'react-router-dom';\n\nexport const ProtectedRoute = ({ children }) => {\n  const isAuthenticated = false; // заменить реальной проверкой\n  return isAuthenticated ? children : <Navigate to='/login' replace />;\n};"
+    },
+    {
+      "type": "code",
+      "title": "src/pages/BookPage.jsx — страница с бизнес-компонентами",
+      "code": "import React from 'react';\nimport { BookList } from '../business/BookList';\nimport { BookCard } from '../business/BookCard';\n\nexport default function BookPage() {\n  const books = [\n    { id: 'b1', title: 'Clean Code', price: 1000 },\n    { id: 'b2', title: 'Refactoring', price: 1200 }\n  ];\n  return (\n    <section>\n      <h2>Books</h2>\n      <BookList>\n        {books.map(b => (\n          <BookCard key={b.id} title={b.title} price={b.price} />\n        ))}\n      </BookList>\n    </section>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "title": "src/pages/AuthorPage.jsx — страница с бизнес-компонентами",
+      "code": "import React from 'react';\nimport { AuthorList } from '../business/AuthorList';\nimport { AuthorCard } from '../business/AuthorCard';\n\nexport default function AuthorPage() {\n  const authors = [\n    { id: 'a1', name: 'Robert C. Martin' },\n    { id: 'a2', name: 'Martin Fowler' }\n  ];\n  return (\n    <section>\n      <h2>Authors</h2>\n      <AuthorList>\n        {authors.map(a => (\n          <AuthorCard key={a.id} name={a.name} />\n        ))}\n      </AuthorList>\n    </section>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "title": "src/pages/CartPage.jsx — страница с бизнес-компонентом",
+      "code": "import React from 'react';\nimport { Cart } from '../business/Cart';\n\nexport default function CartPage() {\n  return (\n    <section>\n      <h2>Cart</h2>\n      <Cart />\n    </section>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "title": "src/pages/LoginPage.jsx — страница с бизнес-компонентом",
+      "code": "import React from 'react';\nimport { LoginForm } from '../business/LoginForm';\n\nexport default function LoginPage() {\n  return (\n    <section>\n      <h2>Login</h2>\n      <LoginForm />\n    </section>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "title": "src/business/BookList.jsx",
+      "code": "import React from 'react';\n\nexport const BookList = ({ children }) => <div data-role='BookList'>{children}</div>;"
+    },
+    {
+      "type": "code",
+      "title": "src/business/BookCard.jsx",
+      "code": "import React from 'react';\nimport { Button } from '../components/Button';\n\nexport const BookCard = ({ title, price }) => (\n  <article data-role='BookCard'>\n    <h4>{title}</h4>\n    <p>{price} ₽</p>\n    <Button>Buy</Button>\n  </article>\n);"
+    },
+    {
+      "type": "code",
+      "title": "src/business/AuthorList.jsx",
+      "code": "import React from 'react';\n\nexport const AuthorList = ({ children }) => <div data-role='AuthorList'>{children}</div>;"
+    },
+    {
+      "type": "code",
+      "title": "src/business/AuthorCard.jsx",
+      "code": "import React from 'react';\n\nexport const AuthorCard = ({ name }) => <article data-role='AuthorCard'>{name}</article>;"
+    },
+    {
+      "type": "code",
+      "title": "src/business/Cart.jsx",
+      "code": "import React from 'react';\n\nexport const Cart = () => <div data-role='Cart'>Cart business component</div>;"
+    },
+    {
+      "type": "code",
+      "title": "src/business/LoginForm.jsx",
+      "code": "import React from 'react';\nimport { Input } from '../components/Input';\nimport { Button } from '../components/Button';\n\nexport const LoginForm = () => (\n  <form data-role='LoginForm'>\n    <Input placeholder='Email' />\n    <Input placeholder='Password' type='password' />\n    <Button>Sign in</Button>\n  </form>\n);"
+    },
+    {
+      "type": "code",
+      "title": "src/components/Button.jsx",
+      "code": "import React from 'react';\n\nexport const Button = ({ children }) => <button>{children}</button>;"
+    },
+    {
+      "type": "code",
+      "title": "src/components/Input.jsx",
+      "code": "import React from 'react';\n\nexport const Input = (props) => <input {...props} />;"
+    },
+    {
+      "type": "array",
+      "title": "Классификация ролей (итог)",
+      "array": [
+        "Корень конфигурации: RouterProvider.",
+        "Родительский маршрут: Layout (Outlet + навигация).",
+        "Страницы: BookPage, AuthorPage, CartPage, LoginPage.",
+        "Бизнес-компоненты: BookList, BookCard, AuthorList, AuthorCard, Cart, LoginForm.",
+        "Простые конечные компоненты: Button, Input."
+      ]
+    },
+    {
+      "type": "image",
+      "title": "Диаграмма компонентов",
+      "name": "1",
+      "folder": "1",
+      "chapter": "6.3",
+      "format": "png"
+    }
+  ]
+}

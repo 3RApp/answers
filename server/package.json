@@ -1,0 +1,17 @@
+{
+  "name": "drills",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kuzmin Anton",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.8.2",
+    "express": "^5.1.0",
+    "react-redux": "^9.2.0"
+  }
+}

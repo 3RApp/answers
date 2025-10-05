@@ -1,0 +1,37 @@
+{
+  "heading": "Решение: сложные сценарии использования useEffect",
+  "chapter": "5.7",
+  "input_data": "Определены три компонента, каждый из которых демонстрирует работу useEffect в разных ситуациях. Создан Dashboard для объединения компонентов и анализа поведения.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "Компонент DataFetcher",
+      "code": "import React, { useEffect, useState } from 'react';\n\nexport const DataFetcher = ({ userId }) => {\n  const [user, setUser] = useState(null);\n\n  useEffect(() => {\n    const controller = new AbortController();\n    console.log('Запуск эффекта DataFetcher для userId', userId);\n\n    fetch(`https://jsonplaceholder.typicode.com/users/${userId}`, { signal: controller.signal })\n      .then(res => res.json())\n      .then(data => setUser(data))\n      .catch(err => {\n        if (err.name !== 'AbortError') console.error(err);\n      });\n\n    return () => {\n      console.log('Очистка эффекта DataFetcher для userId', userId);\n      controller.abort();\n    };\n  }, [userId]);\n\n  if (!user) return <div>Загрузка...</div>;\n\n  return <div>{user.name} — {user.email}</div>;\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент Timer",
+      "code": "import React, { useEffect, useState } from 'react';\n\nexport const Timer = () => {\n  const [seconds, setSeconds] = useState(0);\n\n  useEffect(() => {\n    console.log('Запуск эффекта Timer');\n    const id = setInterval(() => setSeconds(prev => prev + 1), 1000);\n\n    return () => {\n      console.log('Очистка эффекта Timer');\n      clearInterval(id);\n    };\n  }, []);\n\n  return <div>Секунды: {seconds}</div>;\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент WindowSizeTracker",
+      "code": "import React, { useEffect, useState } from 'react';\n\nexport const WindowSizeTracker = () => {\n  const [size, setSize] = useState({ width: window.innerWidth, height: window.innerHeight });\n\n  useEffect(() => {\n    console.log('Подписка на resize');\n    const handleResize = () => setSize({ width: window.innerWidth, height: window.innerHeight });\n    window.addEventListener('resize', handleResize);\n\n    return () => {\n      console.log('Отписка от resize');\n      window.removeEventListener('resize', handleResize);\n    };\n  }, []);\n\n  return <div>Размер: {size.width} × {size.height}</div>;\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент Dashboard",
+      "code": "import React, { useState } from 'react';\nimport { DataFetcher } from './DataFetcher';\nimport { Timer } from './Timer';\nimport { WindowSizeTracker } from './WindowSizeTracker';\n\nexport default function Dashboard() {\n  const [userId, setUserId] = useState(1);\n\n  return (\n    <main>\n      <h2>Dashboard</h2>\n      <button onClick={() => setUserId(id => id + 1)}>Следующий пользователь</button>\n      <DataFetcher userId={userId} />\n      <Timer />\n      <WindowSizeTracker />\n    </main>\n  );\n}"
+    },
+    {
+      "type": "array",
+      "title": "Функциональные возможности",
+      "array": [
+        "DataFetcher делает сетевой запрос при изменении userId и корректно отменяет предыдущий.",
+        "Timer использует setInterval и очищает его при размонтировании.",
+        "WindowSizeTracker подписывается на событие resize и отписывается при размонтировании.",
+        "Dashboard объединяет компоненты и демонстрирует последовательность вызовов рендера и useEffect."
+      ]
+    }
+  ]
+}

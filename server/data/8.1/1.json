@@ -1,0 +1,64 @@
+{
+  "heading": "Решение: архитектура и визуальное проектирование корпоративного портала StaffFlow (3RApp)",
+  "chapter": "8.1",
+  "input_data": "На основе визуального дизайна корпоративного портала StaffFlow выполнено комплексное проектирование приложения, построенного по архитектуре 3R (React, React Router, Redux Toolkit). Решение включает определение ролей компонентов, структуры приложения, маршрутов, глобального состояния, а также анализ визуального макета интерфейса.",
+  "answer": [
+    {
+      "type": "array",
+      "title": "Роли и примеры компонентов",
+      "array": [
+        "Провайдер — StoreProvider (ReduxToolkit), RouterProvider (React Router).",
+        "Лэйаут — MainLayout (верхнее меню, боковое меню, контентная область).",
+        "Страница — DashboardPage, TasksPage, VacationPage, ProfilePage, NewsPage.",
+        "Бизнес-компонент — TaskList, TaskDetails, TaskCreatingForm, VactionList, VacationDetails, VacationCreatingForm, NewsFeed, ProfileEditor, PasswordChange, LoginForm, Statistic.",
+        "Простой конечный компонент — Button, Input, Image, Header, Text."
+      ]
+    },
+    {
+      "type": "array",
+      "title": "Глобальное состояние приложения (пример Redux slice)",
+      "array": [
+        "auth: { isAuthenticated: boolean, user: { id, name, role } }",
+        "tasks: { items: Task[], loading: boolean, selectedTaskId: taskId }",
+        "vacations: { requests: Vacation[], loading: boolean }",
+        "news: { items: News[], lastUpdated: string }",
+        "profile: { data: UserProfile, updating: boolean }"
+      ]
+    },
+    {
+      "type": "array",
+      "title": "Связь компонентов с REST API",
+      "array": [
+        "LoginForm — POST /api/v1/login",
+        "LoginForm — GET /api/v1/password/{userId}",
+        "TaskList — GET /api/v1/tasks/{userId}",
+        "TaskDetails — GET /api/v1/tasks/{taskId}",
+        "VacationForm — POST /api/v1/vacations",
+        "VacationList — GET /api/v1/vacations/{userId}",
+        "NewsFeed — GET /api/v1/news",
+        "ProfileEditor — PUT /api/v1/users/{userId}",
+        "Statistics — GET /api/v1/tasks/{userId}, GET /api/v1/news, GET /api/v1/vacations/{userId}, GET /api/v1/password/{userId}"
+      ]
+    },
+    {
+      "type": "array",
+      "title": "Пути маршрутов (URL)",
+      "array": [
+        "DashboardPage — /",
+        "Примечание. В URL не предусматривается просмотр детальной информации о задаче по ID при нахождении на странице Дашборд. Детальная информация по ID задачи в URL предусматривается на странице Задачи.",
+        "TasksPage — /tasks",
+        "TaskDetails — /tasks/:taskId",
+        "VacationPage — /vacations",
+        "ProfilePage — /profile",
+        "LoginPage — /login"
+      ]
+    },
+    {
+      "type": "array",
+      "title": "Заключение",
+      "array": [
+        "Проектирование приложения StaffFlow выполнено с применением процедуры проектирования 3RApp, описанной в книге с примерами на страницах 370 - 392."
+      ]
+    }
+  ]
+}

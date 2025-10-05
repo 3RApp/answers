@@ -1,0 +1,41 @@
+{
+  "heading": "Решение: корректная иерархия интернет-магазина",
+  "chapter": "5.19",
+  "input_data": "Определена структура приложения интернет-магазина с правильной классификацией ролей компонентов. ProductCard — бизнес-компонент, использующий конечные элементы интерфейса.",
+  "answer": [
+    {
+      "type": "array",
+      "title": "Роли компонентов",
+      "array": [
+        "Провайдеры: Provider (например, ThemeProvider, AuthProvider).",
+        "Приложение: App — связывает провайдеры, Layout и страницы.",
+        "Лэйаут: Layout — общий каркас (header, footer, навигация).",
+        "Страницы: CatalogPage, CartPage, ProfilePage.",
+        "Бизнес-компоненты: ProductList, ProductCard, CheckoutForm, UserProfile.",
+        "Конечные компоненты: Button, Input, Image."
+      ]
+    },
+    {
+      "type": "code",
+      "title": "Пример реализации иерархии",
+      "code": "export const Button = ({ children, onClick }) => (\n  <button onClick={onClick}>{children}</button>\n);\n\nexport const ProductCard = ({ name, price }) => (\n  <div className='card'>\n    <h4>{name}</h4>\n    <p>{price} ₽</p>\n    <Button>Купить</Button>\n  </div>\n);\n\nexport const ProductList = ({ products }) => (\n  <div className='list'>\n    {products.map(p => <ProductCard key={p.id} name={p.name} price={p.price} />)}\n  </div>\n);\n\nexport const CatalogPage = ({ products }) => (\n  <section>\n    <h2>Каталог</h2>\n    <ProductList products={products} />\n  </section>\n);\n\nexport const Layout = ({ children }) => (\n  <div>\n    <header>Магазин</header>\n    <main>{children}</main>\n    <footer>© 2025</footer>\n  </div>\n);\n\nexport const App = () => {\n  const products = [\n    { id: 1, name: 'Ноутбук', price: 90000 },\n    { id: 2, name: 'Смартфон', price: 60000 }\n  ];\n\n  return (\n    <Layout>\n      <CatalogPage products={products} />\n    </Layout>\n  );\n};"
+    },
+    {
+      "type": "array",
+      "title": "Аргументация классификации",
+      "array": [
+        "ProductCard отображает бизнес-сущность «товар». Это не атомарный элемент, а агрегат данных и интерфейсных элементов.",
+        "Конечные компоненты внутри ProductCard — Button, Image и т. д. — действительно атомарны и могут использоваться в других местах.",
+        "Таким образом, ProductCard — бизнес-компонент, а не конечный."
+      ]
+    },
+    {
+      "type": "image",
+      "title": "Иерархия компонентов интернет-магазина",
+      "name": "1",
+      "folder": "1",
+      "chapter": "5.19",
+      "format": "png"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "heading": "Решение: обработка событий в React",
+  "chapter": "5.9",
+  "input_data": "Определены компоненты, демонстрирующие продвинутые сценарии обработки событий, включая использование preventDefault, множественных обработчиков и работу с глобальными объектами.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "Компонент FormHandler",
+      "code": "import React, { useState } from 'react';\n\nexport const FormHandler = () => {\n  const [email, setEmail] = useState('');\n  const [password, setPassword] = useState('');\n\n  const handleSubmit = (e) => {\n    e.preventDefault();\n    console.log('Email:', email, 'Password:', password);\n  };\n\n  return (\n    <form onSubmit={handleSubmit}>\n      <input type=\"email\" value={email} onChange={(e) => setEmail(e.target.value)} />\n      <input type=\"password\" value={password} onChange={(e) => setPassword(e.target.value)} />\n      <button type=\"submit\">Отправить</button>\n    </form>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент LinkBlocker",
+      "code": "import React from 'react';\n\nexport const LinkBlocker = () => {\n  const handleClick = (e) => {\n    e.preventDefault();\n    console.log('Ссылка:', e.target.href);\n    console.log('Обработчик на элементе:', e.currentTarget);\n  };\n\n  return (\n    <div onClick={handleClick}>\n      <a href=\"https://example.com\">Example</a>\n      <a href=\"https://react.dev\">React</a>\n    </div>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент MouseTracker",
+      "code": "import React, { useState } from 'react';\n\nexport const MouseTracker = () => {\n  const [coords, setCoords] = useState({ x: 0, y: 0 });\n  const [clicks, setClicks] = useState(0);\n\n  const handleMove = (e) => setCoords({ x: e.clientX, y: e.clientY });\n  const handleClick = () => setClicks(c => c + 1);\n\n  return (\n    <div style={{ height: '200px', border: '1px solid black' }}\n         onMouseMove={handleMove}\n         onClick={handleClick}>\n      <p>Координаты: {coords.x}, {coords.y}</p>\n      <p>Клики: {clicks}</p>\n    </div>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент GlobalResizeTracker",
+      "code": "import React, { useEffect, useState } from 'react';\n\nexport const GlobalResizeTracker = () => {\n  const [size, setSize] = useState({ width: window.innerWidth, height: window.innerHeight });\n\n  useEffect(() => {\n    const handleResize = () => setSize({ width: window.innerWidth, height: window.innerHeight });\n    window.addEventListener('resize', handleResize);\n\n    return () => window.removeEventListener('resize', handleResize);\n  }, []);\n\n  return (\n    <div>Размер окна: {size.width} × {size.height}</div>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент Dashboard",
+      "code": "import React from 'react';\nimport { FormHandler } from './FormHandler';\nimport { LinkBlocker } from './LinkBlocker';\nimport { MouseTracker } from './MouseTracker';\nimport { GlobalResizeTracker } from './GlobalResizeTracker';\n\nexport default function Dashboard() {\n  return (\n    <main>\n      <h2>Dashboard</h2>\n      <FormHandler />\n      <LinkBlocker />\n      <MouseTracker />\n      <GlobalResizeTracker />\n    </main>\n  );\n}"
+    },
+    {
+      "type": "array",
+      "title": "Функциональные возможности",
+      "array": [
+        "FormHandler управляет состоянием двух полей формы и предотвращает стандартное поведение при отправке.",
+        "LinkBlocker демонстрирует работу preventDefault, target и currentTarget при клике по ссылке.",
+        "MouseTracker совмещает обработку событий onMouseMove и onClick на одном элементе.",
+        "GlobalResizeTracker назначает обработчик resize на объект window за пределами React.",
+        "Dashboard объединяет все компоненты для демонстрации сложной обработки событий."
+      ]
+    }
+  ]
+}

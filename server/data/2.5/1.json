@@ -1,0 +1,79 @@
+{
+  "heading": "DOM: решение задачи о реальных и ложных сущностях",
+  "chapter": "2.5",
+  "input_data": "Представлен список узлов и методов. Часть из них реально существует в DOM, часть является вымышленными. Необходимо определить, какие сущности относятся к DOM, а какие нет, и обосновать выбор.",
+  "answer": [
+    {
+      "type": "array",
+      "title": "Классификация узлов",
+      "array": [
+        "Реальные: document, Element, Text, Comment, DocumentType, DocumentFragment, Node, EventTarget, Attribute, HTMLCollection.",
+        "Вымышленные: VirtualNode, ShadowFragment, GhostElement.",
+        "Обоснование: реальные узлы описаны в спецификации DOM. VirtualNode и ShadowFragment — скорее аллюзия на внутренние реализации браузеров или концепцию Shadow DOM, но как узлы они не существуют. GhostElement также отсутствует в API."
+      ]
+    },
+    {
+      "type": "array",
+      "title": "Классификация методов и свойств",
+      "array": [
+        "Реальные: querySelector, querySelectorAll, getElementById, getElementsByClassName, getElementsByTagName, appendChild, removeChild, createElement, createTextNode, setAttributeNode, childNodes, children, previousSibling, nextSibling, nodeType, classList.",
+        "Вымышленные: replaceNode, detachNode, superQuery, cloneFragment.",
+        "Обоснование: replaceNode и detachNode встречаются в некоторых сторонних библиотеках, но в DOM API их нет. superQuery и cloneFragment являются полностью вымышленными."
+      ]
+    },
+    {
+      "type": "array",
+      "title": "Цепочки наследования",
+      "array": [
+        "document → HTMLDocument → Document → Node → EventTarget → Object",
+        "h1-элемент → HTMLHeadingElement → HTMLElement → Element → Node → EventTarget → Object",
+        "текстовый узел → Text → CharacterData → Node → EventTarget → Object"
+      ]
+    },
+    {
+      "type": "array",
+      "title": "Различия между childNodes и children",
+      "array": [
+        "childNodes возвращает все дочерние узлы, включая текстовые и комментарии.",
+        "children возвращает только дочерние элементы (элементы HTML-тегов)."
+      ]
+    },
+    {
+      "type": "array",
+      "title": "Различия между атрибутами и свойствами",
+      "array": [
+        "Атрибуты — часть HTML-разметки, задают исходное состояние элемента.",
+        "Свойства — отражают текущее состояние DOM-объекта и могут изменяться в процессе работы."
+      ]
+    },
+    {
+      "type": "code",
+      "title": "Пример добавления нового элемента",
+      "code": "const ul = document.querySelector('ul');\nconst li = document.createElement('li');\nli.textContent = 'Новый элемент';\nul.appendChild(li);"
+    },
+    {
+      "type": "code",
+      "title": "Пример удаления элемента",
+      "code": "const ul = document.querySelector('ul');\nconst last = ul.lastElementChild;\nul.removeChild(last);"
+    },
+    {
+      "type": "code",
+      "title": "Пример повторного использования удалённого элемента",
+      "code": "const li = document.createElement('li');\nli.textContent = 'Перемещаемый элемент';\nconst ul1 = document.querySelector('#list1');\nul1.appendChild(li);\nconst ul2 = document.querySelector('#list2');\nul2.appendChild(li);"
+    },
+    {
+      "type": "code",
+      "title": "Пример с DocumentFragment",
+      "code": "const fragment = document.createDocumentFragment();\nfor (let i = 0; i < 5; i++) {\n  const li = document.createElement('li');\n  li.textContent = 'Элемент ' + i;\n  fragment.appendChild(li);\n}\ndocument.querySelector('ul').appendChild(fragment);"
+    },
+    {
+      "type": "array",
+      "title": "Критерии для отличия реальных методов DOM API",
+      "array": [
+        "Наличие метода или свойства в спецификации DOM (MDN, WHATWG).",
+        "Поддержка метода во всех современных браузерах.",
+        "Реальные методы чаще всего доступны через объект document или элемент, тогда как вымышленные встречаются только в сторонних библиотеках."
+      ]
+    }
+  ]
+}

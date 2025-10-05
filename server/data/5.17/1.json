@@ -1,0 +1,29 @@
+{
+  "heading": "Решение: кастомный хук useApiData без контекста",
+  "chapter": "5.17",
+  "input_data": "Реализован кастомный хук useApiData, который принимает полный URL. Хук управляет состоянием загрузки и ошибками через useReducer, поддерживает повторные запросы через refetch и вычисляет агрегированные данные.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "Реализация кастомного хука useApiData",
+      "code": "import { useReducer, useRef, useCallback, useMemo, useEffect } from 'react';\n\nconst initialState = { data: [], loading: false, error: null };\n\nfunction reducer(state, action) {\n  switch (action.type) {\n    case 'FETCH_START': return { ...state, loading: true, error: null };\n    case 'FETCH_SUCCESS': return { data: action.payload, loading: false, error: null };\n    case 'FETCH_ERROR': return { ...state, loading: false, error: action.payload };\n    default: return state;\n  }\n}\n\nexport const useApiData = (url) => {\n  const [state, dispatch] = useReducer(reducer, initialState);\n  const activeRef = useRef(true);\n\n  const fetchData = useCallback(async () => {\n    if (!url) return;\n    dispatch({ type: 'FETCH_START' });\n    try {\n      const res = await fetch(url);\n      if (!res.ok) throw new Error(`Ошибка запроса: ${res.status}`);\n      const json = await res.json();\n      if (activeRef.current) dispatch({ type: 'FETCH_SUCCESS', payload: json });\n    } catch (err) {\n      if (activeRef.current) dispatch({ type: 'FETCH_ERROR', payload: err.message });\n    }\n  }, [url]);\n\n  useEffect(() => {\n    activeRef.current = true;\n    fetchData();\n    return () => { activeRef.current = false; };\n  }, [fetchData]);\n\n  const count = useMemo(() => state.data.length, [state.data]);\n\n  return { ...state, refetch: fetchData, count };\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент Dashboard",
+      "code": "import React from 'react';\nimport { useApiData } from './useApiData';\n\nexport const Dashboard = () => {\n  const { data, loading, error, refetch, count } = useApiData('https://jsonplaceholder.typicode.com/users');\n\n  return (\n    <div>\n      <h3>Dashboard</h3>\n      {loading && <p>Загрузка...</p>}\n      {error && <p style={{ color: 'red' }}>Ошибка: {error}</p>}\n      <p>Количество пользователей: {count}</p>\n      <ul>\n        {data.map(user => <li key={user.id}>{user.name}</li>)}\n      </ul>\n      <button onClick={refetch}>Обновить</button>\n    </div>\n  );\n};"
+    },
+    {
+      "type": "array",
+      "title": "Функциональные возможности",
+      "array": [
+        "useApiData принимает полный URL и сразу делает корректный запрос.",
+        "Редьюсер управляет состоянием: загрузка, успех, ошибка.",
+        "useRef используется для предотвращения обновлений после размонтирования.",
+        "useCallback мемоизирует функцию refetch для повторного запроса.",
+        "useMemo вычисляет количество элементов в массиве данных.",
+        "Dashboard демонстрирует использование хука и отображает данные с кнопкой обновления."
+      ]
+    }
+  ]
+}

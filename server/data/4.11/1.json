@@ -1,0 +1,37 @@
+{
+  "heading": "Решение: разработка приложения с использованием Redux Toolkit",
+  "chapter": "4.11",
+  "input_data": "В приложении интернет-магазина выделены три области состояния: корзина, пользователь и список товаров. Для каждой реализованы соответствующие слайсы и API, объединённые в configureStore.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "Слайс корзины",
+      "code": "const cartSlice = createSlice({\n  name: 'cart',\n  initialState: [],\n  reducers: {\n    addToCart: (state, action) => { state.push(action.payload); },\n    removeFromCart: (state, action) => state.filter(id => id !== action.payload)\n  }\n});\n\nexport const { addToCart, removeFromCart } = cartSlice.actions;"
+    },
+    {
+      "type": "code",
+      "title": "Слайс пользователя",
+      "code": "const userSlice = createSlice({\n  name: 'user',\n  initialState: { isAuth: false },\n  reducers: {\n    login: (state) => { state.isAuth = true; }\n  }\n});\n\nexport const { login } = userSlice.actions;"
+    },
+    {
+      "type": "code",
+      "title": "API-слайс для списка товаров",
+      "code": "const productsApi = createApi({\n  reducerPath: 'productsApi',\n  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:0000/' }),\n  endpoints: (build) => ({\n    getProducts: build.query({ query: () => 'products' })\n  })\n});\n\nexport const { useGetProductsQuery } = productsApi;"
+    },
+    {
+      "type": "code",
+      "title": "Создание store",
+      "code": "const store = configureStore({\n  reducer: {\n    cart: cartSlice.reducer,\n    user: userSlice.reducer,\n    [productsApi.reducerPath]: productsApi.reducer\n  },\n  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(productsApi.middleware)\n});"
+    },
+    {
+      "type": "code",
+      "title": "Использование getState и subscribe",
+      "code": "store.subscribe(() => {\n  console.log('Корзина обновилась:', store.getState().cart);\n});"
+    },
+    {
+      "type": "code",
+      "title": "Тестовый сценарий",
+      "code": "store.dispatch(addToCart('p1'));\nstore.dispatch(userSlice.actions.login());\n\nconsole.log('Пользователь:', store.getState().user);\nconsole.log('Корзина:', store.getState().cart);\n\n// В реальном приложении с React можно использовать useGetProductsQuery\nconsole.log('Товары из API будут загружены через productsApi.getProducts');"
+    }
+  ]
+}

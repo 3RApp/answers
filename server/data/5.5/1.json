@@ -1,0 +1,32 @@
+{
+  "heading": "Решение: свойства и константы в React-компонентах",
+  "chapter": "5.5",
+  "input_data": "Определены компоненты, демонстрирующие использование свойств и внутренних констант. Организована композиция компонентов в составе Dashboard.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "Компонент UserCard",
+      "code": "export const UserCard = ({ username, age }) => (\n  <div>\n    <h3>Пользователь: {username}</h3>\n    <p>Возраст: {age}</p>\n  </div>\n);"
+    },
+    {
+      "type": "code",
+      "title": "Компонент DiscountPrice (использование props напрямую)",
+      "code": "export const DiscountPrice = (props) => {\n  const discount = 0.2;\n  return (\n    <div>\n      Цена со скидкой: {props.price - props.price * discount}\n    </div>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент DiscountPrice (с деструктуризацией)",
+      "code": "export const DiscountPrice = ({ price }) => {\n  const discount = 0.2;\n  return (\n    <div>\n      Цена со скидкой: {price - price * discount}\n    </div>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент Temperature",
+      "code": "export const Temperature = ({ celsius }) => {\n  const factor = 9/5;\n  const offset = 32;\n  return (\n    <div>\n      {celsius} °C = {celsius * factor + offset} °F\n    </div>\n  );\n};"
+    },
+    {
+      "type": "code",
+      "title": "Компонент Dashboard",
+      "code": "export default function Dashboard() {\n  return (\n    <main>\n      <UserCard username=\"Анна\" age={29} />\n      <DiscountPrice price={1000} />\n      <Temperature celsius={25} />\n    </main>\n  );\n}"
+    }
+  ]
+}

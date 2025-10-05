@@ -1,0 +1,55 @@
+{
+  "heading": "Решение: новая структура файлов и переименование компонентов",
+  "chapter": "7.1",
+  "input_data": "После анализа ролей компонентов и связей между ними выполнено переименование и перераспределение файлов в соответствии с двумя принципами организации проекта.",
+  "answer": [
+    {
+      "type": "array",
+      "title": "Переименование компонентов по ролям",
+      "array": [
+        "DataContext → DataProvider (роль: Провайдер)",
+        "MainLayout → MainLayout (роль: Лэйаут)",
+        "Profile → ProfilePage (роль: Страница)",
+        "ProductList → ProductList (роль: Бизнес-компонент)",
+        "ProductCard → ProductCard (роль: Бизнес-компонент)",
+        "Button → Button (роль: Простой конечный компонент)",
+        "Input → Input (роль: Простой конечный компонент)",
+        "App → App (роль: Приложение)"
+      ]
+    },
+    {
+      "type": "array",
+      "title": "Итоговая структура проекта",
+      "array": [
+        "src/",
+        " ├── providers/",
+        " │    └── DataProvider.jsx",
+        " ├── layout/",
+        " │    └── MainLayout.jsx",
+        " ├── pages/",
+        " │    └── ProfilePage.jsx",
+        " ├── business/",
+        " │    ├── ProductList.jsx",
+        " │    ├── ProductCard.jsx",
+        " │    └── hooks/",
+        " │         └── useFetchData.js",
+        " ├── components/",
+        " │    ├── Button.jsx",
+        " │    └── Input.jsx",
+        " ├── App.jsx",
+        " └── index.js"
+      ]
+    },
+    {
+      "type": "array",
+      "title": "Обоснование решений",
+      "array": [
+        "Компоненты группируются по ролям, а не по их вложенности в дереве (вернее в графе типа DAG) компонентов.",
+        "Хук useFetchData используется только в бизнес-компонентах, поэтому размещён в папке business/hooks.",
+        "Компонент App остаётся в src, выполняя роль корня приложения.",
+        "Компоненты Button и Input переиспользуются часто и размещены в src/components.",
+        "Папки layout, pages, business и providers находятся на одном уровне в src, что обеспечивает простую навигацию."
+      ]
+    }
+  ]
+}

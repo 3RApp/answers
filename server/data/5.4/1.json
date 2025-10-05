@@ -1,0 +1,32 @@
+{
+  "heading": "Решение: композиция React-компонентов",
+  "chapter": "Раздел 32. Компонент, часть 1. Композиция",
+  "input_data": "Созданы компоненты Greeting, ClickCounter, Clock, ChessClock и App. Внутри каждого есть минимальный JSX, позволяющий увидеть структуру композиции при рендере.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "ClickCounter",
+      "code": "export const ClickCounter = () => <div>ClickCounter component</div>;"
+    },
+    {
+      "type": "code",
+      "title": "Greeting",
+      "code": "export const Greeting = () => (\n  <section>\n    <div>Greeting component</div>\n    <ClickCounter />\n  </section>\n);"
+    },
+    {
+      "type": "code",
+      "title": "Clock",
+      "code": "export const Clock = () => <div>Clock component</div>;"
+    },
+    {
+      "type": "code",
+      "title": "ChessClock",
+      "code": "export const ChessClock = () => (\n  <section>\n    <div>ChessClock component</div>\n    <Clock />\n    <Clock />\n  </section>\n);"
+    },
+    {
+      "type": "code",
+      "title": "App",
+      "code": "export default function App() {\n  return (\n    <main>\n      <Greeting />\n      <ChessClock />\n    </main>\n  );\n}"
+    }
+  ]
+}

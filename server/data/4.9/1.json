@@ -1,0 +1,38 @@
+{
+  "heading": "Решение: использование RTK Query",
+  "chapter": "4.9",
+  "input_data": "Создан productsApi с query и mutation, добавлен в store вместе с counterSlice. Используются теги для управления кешем.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "Создание API-слайса",
+      "code": "import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';\n\nexport const productsApi = createApi({\n  reducerPath: 'productsApi',\n  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:4000/' }),\n  tagTypes: ['Products'],\n  endpoints: (build) => ({\n    getProducts: build.query({\n      query: () => 'products',\n      providesTags: ['Products']\n    }),\n    createProduct: build.mutation({\n      query: (body) => ({\n        url: 'createProduct',\n        method: 'POST',\n        body,\n      }),\n      invalidatesTags: ['Products']\n    })\n  })\n});"
+    },
+    {
+      "type": "code",
+      "title": "Counter slice для интеграции",
+      "code": "const counterSlice = createSlice({\n  name: 'counter',\n  initialState: 0,\n  reducers: {\n    increment: (state) => state + 1,\n    decrement: (state) => Math.max(0, state - 1)\n  }\n});\n\nexport const { increment, decrement } = counterSlice.actions;"
+    },
+    {
+      "type": "code",
+      "title": "Создание store",
+      "code": "import { configureStore } from '@reduxjs/toolkit';\nimport { setupListeners } from '@reduxjs/toolkit/query';\n\nconst store = configureStore({\n  reducer: {\n    counter: counterSlice.reducer,\n    [productsApi.reducerPath]: productsApi.reducer\n  },\n  middleware: (getDefaultMiddleware) =>\n    getDefaultMiddleware().concat(productsApi.middleware)\n});\n\nsetupListeners(store.dispatch);"
+    },
+    {
+      "type": "code",
+      "title": "Использование в компоненте React (хуки RTK Query)",
+      "code": "import React from 'react';\nimport { useGetProductsQuery, useCreateProductMutation } from './productsApi';\n\nexport const Products = () => {\n  const { data: products, isLoading } = useGetProductsQuery();\n  const [createProduct] = useCreateProductMutation();\n\n  if (isLoading) return <p>Loading...</p>;\n\n  return (\n    <div>\n      <ul>\n        {products?.map(p => <li key={p.id}>{p.name}</li>)}\n      </ul>\n      <button onClick={() => createProduct({ id: 'p3', name: 'Новый продукт' })}>\n        Добавить продукт\n      </button>\n    </div>\n  );\n};"
+    },
+    {
+      "type": "array",
+      "title": "Сценарий выполнения",
+      "array": [
+        "Компонент вызывает useGetProductsQuery и получает список продуктов (например, p1, p2).",
+        "Пользователь нажимает кнопку 'Добавить продукт'.",
+        "Вызывается createProduct, мутация отправляет POST-запрос и инвалидирует тег 'Products'.",
+        "RTK Query автоматически выполняет повторный запрос к getProducts.",
+        "Состояние обновляется, список продуктов теперь содержит p1, p2 и новый продукт p3."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "heading": "Решение задачи: мини-приложение на Redux",
+  "chapter": "4.4",
+  "input_data": "Приложение управления задачами реализовано через store, reducer, action, action creators и selector.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "Определение констант типов экшенов",
+      "code": "export const TODO_ADD = 'todo/add';\nexport const TODO_TOGGLE = 'todo/toggle';"
+    },
+    {
+      "type": "code",
+      "title": "Экшен-криэйтеры",
+      "code": "export const addTodo = (title) => ({ type: TODO_ADD, payload: { id: Date.now().toString(), title, done: false } });\nexport const toggleTodo = (id) => ({ type: TODO_TOGGLE, payload: id });"
+    },
+    {
+      "type": "code",
+      "title": "Редьюсер",
+      "code": "const initialState = { todos: [] };\n\nconst reducer = (state = initialState, action) => {\n  switch (action.type) {\n    case TODO_ADD:\n      return { ...state, todos: [...state.todos, action.payload] };\n    case TODO_TOGGLE:\n      return {\n        ...state,\n        todos: state.todos.map(todo =>\n          todo.id === action.payload ? { ...todo, done: !todo.done } : todo\n        )\n      };\n    default:\n      return state;\n  }\n};"
+    },
+    {
+      "type": "code",
+      "title": "Создание стора",
+      "code": "import { createStore } from 'redux';\nconst store = createStore(reducer);"
+    },
+    {
+      "type": "code",
+      "title": "Селектор выполненных задач",
+      "code": "const selectCompletedTodos = (state) => state.todos.filter(todo => todo.done);"
+    },
+    {
+      "type": "code",
+      "title": "Тестовый сценарий",
+      "code": "store.dispatch(addTodo('Изучить Redux'));\nstore.dispatch(addTodo('Написать мини-приложение'));\nconst [firstTodo] = store.getState().todos;\nstore.dispatch(toggleTodo(firstTodo.id));\n\nconsole.log('Выполненные задачи:', selectCompletedTodos(store.getState()));"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "heading": "Решение: использование createSlice",
+  "chapter": "4.8",
+  "input_data": "Реализованы слайсы counter, shoppingCart, rawText и sanitizedText, объединены в единый store. Выполнен тестовый сценарий.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "Слайс counter",
+      "code": "const counterSlice = createSlice({\n  name: 'counter',\n  initialState: 0,\n  reducers: {\n    increment: (state) => state + 1,\n    decrement: (state) => state - 1,\n    incrementByAmount: (state, action) => state + action.payload,\n  }\n});\n\nexport const { increment, decrement, incrementByAmount } = counterSlice.actions;\nexport const counterReducer = counterSlice.reducer;"
+    },
+    {
+      "type": "code",
+      "title": "Слайс shoppingCart с prepare",
+      "code": "const shoppingCartSlice = createSlice({\n  name: 'shoppingCart',\n  initialState: [],\n  reducers: {\n    addToCart: {\n      reducer: (state, action) => {\n        if (!state.find(id => id === action.payload)) {\n          state.push(action.payload);\n        }\n      },\n      prepare: (productId) => ({ payload: productId })\n    },\n    removeFromCart: {\n      reducer: (state, action) => {\n        const index = state.indexOf(action.payload);\n        if (index !== -1) state.splice(index, 1);\n      },\n      prepare: (productId) => ({ payload: productId })\n    }\n  },\n  selectors: {\n    getTotalCount: (state) => state.length\n  }\n});\n\nexport const { addToCart, removeFromCart } = shoppingCartSlice.actions;\nexport const { getTotalCount } = shoppingCartSlice.selectors;\nexport const shoppingCartReducer = shoppingCartSlice.reducer;"
+    },
+    {
+      "type": "code",
+      "title": "Слайсы rawText и sanitizedText с extraReducers",
+      "code": "const rawText = createSlice({\n  name: 'raw',\n  initialState: [],\n  reducers: {\n    addRawText: {\n      reducer: (state, action) => { state.push(action.payload); },\n      prepare: (text) => ({ payload: { id: nanoid(), text } })\n    }\n  }\n});\n\nconst sanitizedText = createSlice({\n  name: 'sanitized',\n  initialState: [],\n  extraReducers: (builder) => {\n    builder.addCase(rawText.actions.addRawText, (state, action) => {\n      const { id, text } = action.payload;\n      state.push({\n        sanitizedId: nanoid(),\n        rawId: id,\n        text: text.replace(/</g, '&lt;').replace(/>/g, '&gt;')\n      });\n    });\n  }\n});"
+    },
+    {
+      "type": "code",
+      "title": "Объединение слайсов и создание store",
+      "code": "const rootReducer = combineSlices(counterSlice, shoppingCartSlice, rawText, sanitizedText);\n\nconst store = configureStore({\n  reducer: rootReducer\n});"
+    },
+    {
+      "type": "code",
+      "title": "Тестовый сценарий",
+      "code": "store.dispatch(addToCart('p1'));\nstore.dispatch(addToCart('p2'));\nstore.dispatch(addToCart('p3'));\nstore.dispatch(removeFromCart('p2'));\n\nstore.dispatch(rawText.actions.addRawText('<hello>'));\n\nconsole.log('Корзина:', store.getState().shoppingCart);\nconsole.log('Всего товаров:', getTotalCount(store.getState().shoppingCart));\nconsole.log('Raw:', store.getState().raw);\nconsole.log('Sanitized:', store.getState().sanitized);"
+    }
+  ]
+}

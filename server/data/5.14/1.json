@@ -1,0 +1,29 @@
+{
+  "heading": "Решение: комплексное управление состоянием через useReducer",
+  "chapter": "5.14",
+  "input_data": "Определён редьюсер, управляющий составным состоянием задач, фильтра и статистики. Реализован компонент TaskManager с формой и фильтрацией списка.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "Редьюсер и инициализатор",
+      "code": "const initialArg = ['Купить хлеб', 'Написать код'];\n\nconst init = (initialTasks) => {\n  const tasks = initialTasks.map((title, idx) => ({ id: idx + 1, title, completed: false }));\n  return {\n    tasks,\n    filter: 'all',\n    stats: { completed: 0, pending: tasks.length }\n  };\n};\n\nfunction reducer(state, action) {\n  switch (action.type) {\n    case 'ADD_TASK': {\n      const newTask = { id: Date.now(), title: action.payload, completed: false };\n      return {\n        ...state,\n        tasks: [...state.tasks, newTask],\n        stats: { ...state.stats, pending: state.stats.pending + 1 }\n      };\n    }\n    case 'TOGGLE_TASK': {\n      const tasks = state.tasks.map(task =>\n        task.id === action.payload ? { ...task, completed: !task.completed } : task\n      );\n      const completed = tasks.filter(t => t.completed).length;\n      return { tasks, filter: state.filter, stats: { completed, pending: tasks.length - completed } };\n    }\n    case 'REMOVE_TASK': {\n      const tasks = state.tasks.filter(t => t.id !== action.payload);\n      const completed = tasks.filter(t => t.completed).length;\n      return { tasks, filter: state.filter, stats: { completed, pending: tasks.length - completed } };\n    }\n    case 'SET_FILTER':\n      return { ...state, filter: action.payload };\n    default:\n      return state;\n  }\n}"
+    },
+    {
+      "type": "code",
+      "title": "Компонент TaskManager",
+      "code": "import React, { useReducer, useState } from 'react';\n\nexport const TaskManager = () => {\n  const [state, dispatch] = useReducer(reducer, initialArg, init);\n  const [input, setInput] = useState('');\n\n  const filteredTasks = state.tasks.filter(task => {\n    if (state.filter === 'completed') return task.completed;\n    if (state.filter === 'pending') return !task.completed;\n    return true;\n  });\n\n  return (\n    <div>\n      <h3>Task Manager</h3>\n      <form onSubmit={(e) => { e.preventDefault(); dispatch({ type: 'ADD_TASK', payload: input }); setInput(''); }}>\n        <input value={input} onChange={(e) => setInput(e.target.value)} />\n        <button type=\"submit\">Добавить</button>\n      </form>\n      <div>\n        <button onClick={() => dispatch({ type: 'SET_FILTER', payload: 'all' })}>Все</button>\n        <button onClick={() => dispatch({ type: 'SET_FILTER', payload: 'completed' })}>Выполненные</button>\n        <button onClick={() => dispatch({ type: 'SET_FILTER', payload: 'pending' })}>Ожидающие</button>\n      </div>\n      <ul>\n        {filteredTasks.map(task => (\n          <li key={task.id}>\n            <span style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>{task.title}</span>\n            <button onClick={() => dispatch({ type: 'TOGGLE_TASK', payload: task.id })}>Переключить</button>\n            <button onClick={() => dispatch({ type: 'REMOVE_TASK', payload: task.id })}>Удалить</button>\n          </li>\n        ))}\n      </ul>\n      <p>Выполнено: {state.stats.completed}, Ожидает: {state.stats.pending}</p>\n    </div>\n  );\n};"
+    },
+    {
+      "type": "array",
+      "title": "Функциональные возможности",
+      "array": [
+        "Редьюсер управляет составным состоянием: список задач, фильтр и статистика.",
+        "Экшены ADD_TASK, TOGGLE_TASK, REMOVE_TASK и SET_FILTER изменяют вложенные структуры без мутации.",
+        "Используется функция init для вычисления стартового состояния из массива строк.",
+        "Компонент TaskManager обеспечивает добавление, переключение и удаление задач.",
+        "Фильтрация задач организована на основе состояния filter.",
+        "Статистика обновляется автоматически при изменении задач."
+      ]
+    }
+  ]
+}

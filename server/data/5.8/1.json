@@ -1,0 +1,42 @@
+{
+  "heading": "Решение: продвинутая композиция компонентов",
+  "chapter": "5.8",
+  "input_data": "Реализованы компоненты, демонстрирующие разные подходы к композиции: children, map, слоты JSX и передача по ссылке. Все техники объединены в составе Dashboard.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "Компонент Container с использованием children напрямую",
+      "code": "export const Container = ({ children }) => (\n  <div className=\"container\">\n    {children}\n  </div>\n);"
+    },
+    {
+      "type": "code",
+      "title": "Компонент DynamicList с map",
+      "code": "export const DynamicList = ({ items }) => (\n  <ul>\n    {items.map(({ id, title, content }) => (\n      <li key={id}>\n        <h4>{title}</h4>\n        <p>{content}</p>\n      </li>\n    ))}\n  </ul>\n);"
+    },
+    {
+      "type": "code",
+      "title": "Компонент LayoutPage со слотами header и footer",
+      "code": "export const LayoutPage = ({ header, footer, children }) => (\n  <div className=\"layout\">\n    <header>{header}</header>\n    <main>{children}</main>\n    <footer>{footer}</footer>\n  </div>\n);"
+    },
+    {
+      "type": "code",
+      "title": "Компоненты Header и Footer",
+      "code": "export const Header = ({ title }) => <h2>{title}</h2>;\nexport const Footer = ({ text }) => <small>{text}</small>;"
+    },
+    {
+      "type": "code",
+      "title": "Компонент Dashboard с передачей компонентов по ссылке",
+      "code": "export default function Dashboard({ HeaderComponent, FooterComponent }) {\n  const items = [\n    { id: 'a1', title: 'Элемент 1', content: 'Содержимое первого элемента' },\n    { id: 'a2', title: 'Элемент 2', content: 'Содержимое второго элемента' },\n    { id: 'a3', title: 'Элемент 3', content: 'Содержимое третьего элемента' }\n  ];\n\n  return (\n    <LayoutPage\n      header={<HeaderComponent title=\"Заголовок Dashboard\" />}\n      footer={<FooterComponent text=\"Футер Dashboard\" />}\n    >\n      <Container>\n        <div>Первый дочерний блок</div>\n        <div>Второй дочерний блок</div>\n        <DynamicList items={items} />\n      </Container>\n    </LayoutPage>\n  );\n}\n\n// Пример использования:\n// <Dashboard HeaderComponent={Header} FooterComponent={Footer} />"
+    },
+    {
+      "type": "array",
+      "title": "Использованные техники",
+      "array": [
+        "Container напрямую использует свойство children без дополнительных преобразований.",
+        "DynamicList применяет map и key для динамического списка объектов.",
+        "LayoutPage использует JSX-слоты для размещения header и footer.",
+        "Dashboard передаёт Header и Footer как ссылки на компоненты и объединяет все элементы в единую структуру."
+      ]
+    }
+  ]
+}

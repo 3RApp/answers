@@ -1,0 +1,40 @@
+{
+  "heading": "Решение: Middleware и Enhancer в Redux",
+  "chapter": "Раздел 21. Middleware. Enhancer",
+  "input_data": "Создано middleware для асинхронной обработки и enhancer для отслеживания состояния. Они объединены через compose и подключены к стору.",
+  "answer": [
+    {
+      "type": "code",
+      "title": "Middleware для задержки INCREMENT",
+      "code": "const delayedActionMiddleware = store => next => action => {\n  if (action.type === 'INCREMENT' && action.meta?.delay) {\n    setTimeout(() => next(action), action.meta.delay);\n    return;\n  }\n  return next(action);\n};"
+    },
+    {
+      "type": "code",
+      "title": "Пример использования applyMiddleware",
+      "code": "import { createStore, applyMiddleware } from 'redux';\nconst store = createStore(rootReducer, applyMiddleware(delayedActionMiddleware));"
+    },
+    {
+      "type": "code",
+      "title": "Enhancer для отслеживания изменений состояния",
+      "code": "const changesTrackerEnhancer = (createStore) => (reducer, initialState) => {\n  const store = createStore(reducer, initialState);\n  let prevState = initialState;\n\n  const dispatch = (action) => {\n    store.dispatch(action);\n    console.log('Prev state:', prevState);\n    console.log('Next state:', store.getState());\n    prevState = store.getState();\n  };\n\n  return { ...store, dispatch };\n};"
+    },
+    {
+      "type": "code",
+      "title": "Объединение middleware и enhancer",
+      "code": "import { compose } from 'redux';\nconst composedEnhancers = compose(applyMiddleware(delayedActionMiddleware), changesTrackerEnhancer);\nconst store = createStore(rootReducer, composedEnhancers);"
+    },
+    {
+      "type": "code",
+      "title": "Тестирование",
+      "code": "store.dispatch({ type: 'INCREMENT', meta: { delay: 1000 } });\nstore.dispatch({ type: 'DECREMENT' });"
+    },
+    {
+      "type": "array",
+      "title": "Разница между next(action) и store.dispatch(action)",
+      "array": [
+        "next(action) передаёт экшен дальше по цепочке middleware и в конечном итоге — в редьюсер.",
+        "store.dispatch(action) запускает всю цепочку middleware заново, включая текущее, что может вызвать зацикливание при отсутствии условия."
+      ]
+    }
+  ]
+}

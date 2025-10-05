@@ -1,0 +1,78 @@
+{
+  "heading": "Решение: анализ событий и управление их распространением",
+  "chapter": "Раздел 9. События",
+  "input_data": "События классифицируются по источникам и типам, имеют строгий порядок распространения и требуют внимательного подхода при назначении и удалении обработчиков.",
+  "answer": [
+    {
+      "type": "array",
+      "title": "Классификация событий",
+      "array": [
+        "Пользовательские: click, keydown, formsubmit.",
+        "Системные: resize, orientationchange, beforeunload, readystatechange, visibilitychange.",
+        "Программные: customEvent (через new Event()).",
+        "Несуществующее: hoverstart — в DOM API такого события нет."
+      ]
+    },
+    {
+      "type": "array",
+      "title": "Источники событий",
+      "array": [
+        "click — элемент DOM.",
+        "keydown — document или конкретный элемент ввода.",
+        "resize — window.",
+        "orientationchange — window.",
+        "beforeunload — window.",
+        "readystatechange — document.",
+        "customEvent — элемент или document, куда событие сгенерировано.",
+        "submit — элемент form.",
+        "visibilitychange — document."
+      ]
+    },
+    {
+      "type": "array",
+      "title": "Дерево распространения события клика по кнопке",
+      "array": [
+        "document → html → body → div → button."
+      ]
+    },
+    {
+      "type": "array",
+      "title": "Порядок вызова обработчиков",
+      "array": [
+        "Фаза захвата: document → html → body → div.",
+        "Фаза цели: button.",
+        "Фаза всплытия: div → body → html → document.",
+        "Если слушатель установлен на body и div для capture = true, то они сработают до обработчика кнопки.",
+        "Если слушатель установлен на button без capture, он сработает на фазе цели/всплытия."
+      ]
+    },
+    {
+      "type": "array",
+      "title": "Влияние методов",
+      "array": [
+        "stopPropagation() — предотвращает дальнейшее всплытие или захват, но другие слушатели на том же элементе выполняются.",
+        "stopImmediatePropagation() — останавливает и всплытие, и все оставшиеся слушатели на текущем элементе."
+      ]
+    },
+    {
+      "type": "code",
+      "title": "Разбор Примера 1",
+      "code": "// Ошибка здесь не в синтаксисе, а в логике:\n// removeEventListener не удаляет обработчик, так как передан другой callback.\nelement.addEventListener('click', () => console.log('Клик'));\nelement.removeEventListener('click', () => console.log('Клик'));\n// Исправление:\nfunction handler() { console.log('Клик'); }\nelement.addEventListener('click', handler);\nelement.removeEventListener('click', handler);"
+    },
+    {
+      "type": "array",
+      "title": "Разбор Примера 2",
+      "array": [
+        "Если кликнуть по кнопке: сработает обработчик кнопки, затем обработчик div, где вызов stopPropagation() остановит всплытие. Обработчик body вызван не будет.",
+        "Если кликнуть по div: сработает обработчик div и всплытие остановится.",
+        "Если кликнуть по body: сработает обработчик body.",
+        "Ошибок в коде нет, он демонстрирует корректное использование stopPropagation()."
+      ]
+    },
+    {
+      "type": "code",
+      "title": "Пример создания и запуска кастомного события",
+      "code": "const customEvent = new Event('myEvent', { bubbles: true });\nconst div = document.querySelector('div');\ndiv.addEventListener('myEvent', () => console.log('Сработало кастомное событие'));\ndiv.dispatchEvent(customEvent);"
+    }
+  ]
+}
